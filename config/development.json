@@ -1,3 +1,4 @@
 {
-    "db":"mongodb+srv://hassanbilal:3725860@cluster0.mt8ml.mongodb.net/desireTechComputers"
+    "db":"mongodb+srv://hassanbilal:3725860@cluster0.mt8ml.mongodb.net/desireTechComputers",
+    "JWT_SECRET":"secretTokken"
 }

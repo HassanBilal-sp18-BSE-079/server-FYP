@@ -8,7 +8,7 @@ let config = require('config');
 
 
 
-var usersRouter = require('./routes/api/users');
+var usersRouter = require('./routes/api/usersRouter');
 var preBuiltDesktopRouter = require('./routes/api/preBuiltDesktopRouter');
 var pcPartsRouter = require('./routes/api/pcPartsRouter');
 
