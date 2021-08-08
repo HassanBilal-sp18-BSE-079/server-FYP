@@ -4,6 +4,8 @@ let {PreBuiltDesktop} = require('../../model/prebuiltDesktopModel');
 let {validation} = require('../../middleWares/validation/validatePreBuiltDesktop');
 let multer = require('multer');
 let fs = require('fs');
+let {auth} = require('../../middleWares/authentication/auth');
+let adminAuth = require('../../middleWares/authentication/adminAuth');
 
 
 
@@ -59,11 +61,11 @@ let upload = multer({storage:storage, fileFilter: fileFilter });
 
 
 /* GET pre-built PCs. */
-router.get('/', async (req, res)=> {
+router.get('/',auth,adminAuth, async (req, res)=> {
   
-    let PreBuiltDesktop = await PreBuiltDesktop.find();
+    let products = await PreBuiltDesktop.find();
 
-    return res.send(PreBuiltDesktop);
+    return res.send(products);
 
 });
 
