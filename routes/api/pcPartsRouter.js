@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 let {PcParts} = require('../../model/pcPartsModel');
-let {validation} = require('../../middleWares/validation/validatePcParts');
+let {validation,validationUpdated} = require('../../middleWares/validation/validatePcParts');
 let multer = require('multer');
 let fs = require('fs');
 
@@ -13,7 +13,7 @@ let fs = require('fs');
 let storage = multer.diskStorage( {
 destination:(req,file,cb)=>{
 
-    let dir =  './client/uploads/pcParts'
+    let dir =  './client/public/uploads/pcParts'
 
     
     if (!fs.existsSync(dir)){
@@ -87,12 +87,17 @@ router.delete('/:id', async (req, res)=> {
 
  
     let product1 = await PcParts.findById(req.params.id);
+    let dir = './client/public/uploads/pcParts/'
    
-    fs.unlinkSync('./client/uploads/' + product1.image.thumbnail);
+    if(fs.existsSync(dir + product1.image.thumbnail )){
 
-    for (let index in product1.image.gallery){
-        fs.unlinkSync('./client/uploads/' + product1.image.gallery[index]);
-    }
+		fs.unlinkSync(dir + product1.image.thumbnail);
+
+		for (let index in product1.image.gallery) {
+			fs.unlinkSync(dir + product1.image.gallery[index]);
+		}
+	}
+
 
     let product = await PcParts.findByIdAndDelete(req.params.id);
 
@@ -102,14 +107,20 @@ router.delete('/:id', async (req, res)=> {
 
 //update product
 
-router.put('/:id', upload.fields([{ name: 'thumbnail', maxCount: 1 },{ name: 'gallery', maxCount: 6 }]) , validation , async (req, res)=> {
-    try{
-        let product = await PcParts.findById(req.params.id);
-        if(!product){
-            return res.status(400).send("Product not present for given ID")
-        }
+router.put('/:id', upload.fields([{ name: 'thumbnail', maxCount: 1 },{ name: 'gallery', maxCount: 6 }]) , validationUpdated , async (req, res)=> {
+    
+    let product = await PcParts.findById(req.params.id);
 
-        product.title = req.body.title;
+
+    if(!product){
+        return res.status(400).send("Product not present for given ID")
+    }
+
+    console.log(req.files);
+
+    if(req.files.thumbnail && req.files.gallery){
+   
+          product.title = req.body.title;
         product.price = req.body.price;
         product.quantity = req.body.quantity;
 
@@ -120,19 +131,76 @@ router.put('/:id', upload.fields([{ name: 'thumbnail', maxCount: 1 },{ name: 'ga
         product.type = req.body.type;
         
         product.image.thumbnail = req.files.thumbnail[0].filename;
+        product.image.thumbnail=[];
         for (let index in req.files.gallery){
             product.image.gallery[index] = req.files.gallery[index].filename;
         }
 
 
-
-        await product.save();
-        return res.send(product);
-    }
-    catch(err){
-        return res.status(400).send('Invalid Id');
+        console.log('thumbnail,gallery');
 
     }
+    else if(req.files.thumbnail || req.files.gallery ){
+        if(req.files.thumbnail){
+    
+            product.title = req.body.title;
+            product.price = req.body.price;
+            product.quantity = req.body.quantity;
+    
+            product.discription.StorageCapacity = req.body.StorageCapacity;
+            product.discription.PowerConsumption = req.body.PowerConsumption;
+         
+            product.model = req.body.model;
+            product.type = req.body.type;
+            
+            product.image.thumbnail = req.files.thumbnail[0].filename;
+             product.image.gallery =product.image.gallery;
+            
+        }
+        else if(req.files.gallery){
+        
+            product.title = req.body.title;
+            product.price = req.body.price;
+            product.quantity = req.body.quantity;
+    
+            product.discription.StorageCapacity = req.body.StorageCapacity;
+            product.discription.PowerConsumption = req.body.PowerConsumption;
+         
+            product.model = req.body.model;
+            product.type = req.body.type;
+        
+        product.image.thumbnail = product.image.thumbnail;
+        product.image.gallery = [];
+        for (let index in req.files.gallery){
+            product.image.gallery[index] = req.files.gallery[index].filename;
+        }
+        console.log('gallery');
+        }
+        
+    }
+    else{
+       
+        product.title = req.body.title;
+        product.price = req.body.price;
+        product.quantity = req.body.quantity;
+
+        product.discription.StorageCapacity = req.body.StorageCapacity;
+        product.discription.PowerConsumption = req.body.PowerConsumption;
+     
+        product.model = req.body.model;
+        product.type = req.body.type;
+        
+        product.image.thumbnail = product.image.thumbnail;
+        product.image.gallery= product.image.gallery;
+
+        console.log('both not present');
+        
+    }
+
+    await product.save();
+    console.log(product);
+    return res.send(product);
+
     
 });
 

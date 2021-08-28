@@ -1,27 +1,24 @@
-let {validationPreBuilt,PreBuiltDesktop} = require('../../model/prebuiltDesktopModel');
+let { validationLaptops, Laptops } = require("../../model/laptopsModel");
 
+let validateLaptops = (req, res, next) => {
+	req.body.thumbnail = req.files.thumbnail[0].filename;
+	req.body.gallery = req.files.gallery;
 
-let validatePreBuiltDesktop = (req,res,next)=>{
+	let { error } = validationLaptops(req.body);
 
+	if (error) {
+		return res.status(400).send(error.details[0].message);
+	}
 
-    req.body.thumbnail= req.files.thumbnail[0].filename;
-    req.body.gallery= req.files.gallery;
-
-
-     let {error} = validationPreBuilt(req.body);
-
-    if(error){
-        return res.status(400).send(error.details[0].message);
-    }
-
-    next();
-
+	next();
 };
 
 
-let validateUpdatedPreBuiltDesktop = async (req,res,next)=>{
+
+
+let validateUpdatedLaptops = async (req,res,next)=>{
     
-    let product = await PreBuiltDesktop.findById(req.params.id);
+    let product = await Laptops.findById(req.params.id);
 
     if(req.files.thumbnail && req.files.gallery){
         req.body.thumbnail= req.files.thumbnail[0].filename;
@@ -48,7 +45,7 @@ let validateUpdatedPreBuiltDesktop = async (req,res,next)=>{
     
 
 
-     let {error} = validationPreBuilt(req.body);
+     let {error} = validationLaptops(req.body);
 
     if(error){
         return res.status(400).send(error.details[0].message);
@@ -59,5 +56,5 @@ let validateUpdatedPreBuiltDesktop = async (req,res,next)=>{
 };
 
 
-module.exports.validation = validatePreBuiltDesktop;
-module.exports.validationUpdated = validateUpdatedPreBuiltDesktop;
+module.exports.validation = validateLaptops;
+module.exports.validationUpdated = validateUpdatedLaptops;

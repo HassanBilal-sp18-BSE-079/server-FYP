@@ -15,6 +15,7 @@ let preBuiltDesktopSchema = mongoose.Schema({
         MotherBoard: String,
         HardDrive: String,
         Casing: String,
+        CoolingSystem: String,
     },
     model: String,
     type:String,
@@ -41,6 +42,7 @@ let validation = (data)=>{
         MotherBoard: joi.string().min(3).required(),
         HardDrive: joi.string().min(3).required(),
         Casing: joi.string().min(3).required(),
+        CoolingSystem: joi.string().min(3).required(),
         
         model: joi.string().min(3).required(),
         type: joi.string().min(3).required(),

@@ -29,11 +29,11 @@ let pcPartsModel = mongoose.model('pcParts',pcPartsSchema);
 
 let validation = (data)=>{
     const schema = joi.object({
-    title: joi.string().min(3).required() ,
-    price: joi.number().min(0).required(),
-    quantity:joi.number().min(0).required(),
-    model : joi.string().min(3).required(),
-    type: joi.string().min(3).required(),
+    title: joi.string().required() ,
+    price: joi.number().required(),
+    quantity:joi.number().required(),
+    model : joi.string().required(),
+    type: joi.string().required(),
     
     thumbnail:joi.string().required(),
     gallery: joi.array().required(),
